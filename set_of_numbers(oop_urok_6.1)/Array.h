@@ -11,13 +11,19 @@ private:
 	friend ostream& operator<< (ostream& putput, Array& _arr);
 public:
 	Array() {
-		size = 0;
+		arr = {nullptr};
+		size = { 0 };
 	};
 	Array(int _size) {
 		size = _size;
 		arr = new int[size];
 		for (int i = 0; i < size; i++) {
 			arr[i] = rand() % 10;
+			for (int j = 0; j < i; j++) {
+				if (arr[i] == arr[j]) {
+					i--;
+				}
+			}
 		}
 	}
 	Array(const Array& other) {
@@ -38,5 +44,6 @@ public:
 	string to_print();
 	bool ownership_check_array(int value);//принадлежность множества
 	void operator+ (const int& value);
+	Array operator+ (Array& other);
 };
 
