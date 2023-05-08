@@ -7,68 +7,204 @@ string Array::to_print()
 		s.append(to_string(this->arr[i]));
 		s.append(" ");
 	}
-	
+
 	return s;
 }
+//------------------------------
 
+//проверка принадлежности числа
 bool Array::ownership_check_array(int value)
 {
 	bool flag{};
 	for (int i = 0; i < size; i++) {
-		(arr[i] == value) ? flag = true : flag = false;
+		if (arr[i] == value) {
+			flag = true;
+			break;
+		}
+		else {
+			flag = false;
+		}
 	}
 	return flag;
 }
+//-----------------------------
 
-void Array::operator+(const int& value)
+//добавление числа к множеству
+void Array::operator+ (const int& value)
 {
-	int* new_arr = new int[size + 1];
+	int* new_arr_plus = new int[size + 1];
 	if (!ownership_check_array(value)) {
-		for (int i = 0; i < size + 1; i++) {
-			new_arr[i] = arr[i];
+		for (int i = 0; i < size; i++) {
+			new_arr_plus[i] = arr[i];
 		}
-		new_arr[size] = value;
+		new_arr_plus[size] = value;
 		delete[] arr;
-		arr = new_arr;
+		arr = new_arr_plus;
 		size++;
 	}
 }
+void Array::operator+= (const int& value)
+{
+	int* new_arr_plus = new int[size + 1];
+	if (!ownership_check_array(value)) {
+		for (int i = 0; i < size; i++) {
+			new_arr_plus[i] = arr[i];
+		}
+		new_arr_plus[size] = value;
+		delete[] arr;
+		arr = new_arr_plus;
+		size++;
+	}
+}
+//-----------------------------------
 
-Array Array::operator+ (Array& other) {
+//сложение множеств
+Array Array::operator+ (Array& other)
+{
 	Array* new_arr = new Array();
 	for (int i = 0; i < size; i++) {
 		if (!new_arr->ownership_check_array(arr[i])) {
-			new_arr[i] = arr[i];
+			*new_arr + arr[i];
 		}
 	}
 	for (int i = 0; i < other.size; i++) {
 		if (!new_arr->ownership_check_array(other.arr[i])) {
-			new_arr[i + size] = other.arr[i];
+			*new_arr + other.arr[i];
 		}
 	}
-
-	//int counter = 0;
-	//for (int i = 0; i < size; i++) {
-	//	for (int j = 0; j < other.size; j++) {
-	//		if (ownership_check_array(other.arr[j])) {
-	//			counter++;
-	//		}
-	//	}
-	//}
-	//int all_size = size + other.size - counter;
-	//Array* new_arr = new Array[all_size];
-	//for (int i = 0; i < size; i++) {
-	//	new_arr[i] = arr[i];
-	//}
-	//for (int i = size; i < all_size; i++) {
-	//	if (!ownership_check_array(other.arr[i])) {
-	//		new_arr[i] = other.arr[i];
-	//	}
-	//}
 	return *new_arr;
 }
+Array Array::operator+= (Array& other)
+{
+	Array* new_arr = new Array();
+	for (int i = 0; i < size; i++) {
+		if (!new_arr->ownership_check_array(arr[i])) {
+			*new_arr + arr[i];
+		}
+	}
+	for (int i = 0; i < other.size; i++) {
+		if (!new_arr->ownership_check_array(other.arr[i])) {
+			*new_arr + other.arr[i];
+		}
+	}
+	return *new_arr;
+}
+//----------------------------------
 
-ostream& operator<< (ostream& output, Array& _arr) {
-	output << _arr.to_print();
+//удаление числа из множества
+void Array::operator- (const int& value)
+{
+	int serial_number = 0;
+	int* new_arr = new int[size - 1];
+	for (int i = 0; i < size; i++) {
+		if (arr[i] == value) {
+			serial_number = i;
+		}
+	}
+	for (int i = 0; i < serial_number; i++) {
+		new_arr[i] = arr[i];
+	}
+	for (int i = serial_number + 1; i < size; i++) {
+		new_arr[i - 1] = arr[i];
+	}
+	delete[] arr;
+	arr = new_arr;
+	size--;
+}
+void Array::operator-= (const int& value)
+{
+	int* new_arr = new int[size - 1];
+	for (int i = 0, j = 0; i < size - 1; i++, j++) {
+		if (arr[i] != value) {
+			new_arr[i] = arr[j];
+		}
+		else {
+			new_arr[i] = arr[++j];
+		}
+	}
+	delete[] arr;
+	arr = new_arr;
+	size--;
+}
+//--------------------------------------
+
+//разность множеств
+Array Array::operator-(Array& other)
+{
+	Array* new_arr = new Array();
+		for (int j = 0; j < other.size; j++) {
+			if (!other.ownership_check_array(arr[j])) {
+				*new_arr + arr[j];
+			}
+		}
+	return *new_arr;
+}
+Array Array::operator-=(Array& other)
+{
+	Array* new_arr = new Array();
+		for (int j = 0; j < other.size; j++) {
+			if (!other.ownership_check_array(arr[j])) {
+				*new_arr + arr[j];
+			}
+		}
+	return *new_arr;
+}
+//--------------------------------
+
+//пересечение множеств
+Array Array::operator* (Array& other)
+{
+	int counter = 0;
+	Array* new_arr = new Array();
+	for (int j = 0; j < other.size; j++) {
+		if (other.ownership_check_array(arr[j])) {
+			*new_arr + arr[j];
+		}
+	}
+	return *new_arr;
+}
+Array Array::operator*= (Array& other)
+{
+	int counter = 0;
+	Array* new_arr = new Array();
+	for (int j = 0; j < other.size; j++) {
+		if (other.ownership_check_array(arr[j])) {
+			*new_arr + arr[j];
+		}
+	}
+	return *new_arr;
+}
+//-----------------------------------
+
+//присваивание
+Array Array::operator=(Array& other)
+{
+	Array* new_arr = new Array();
+	for (int i = 0; i < other.size; i++) {
+		*new_arr + other.arr[i];
+	}
+	return *new_arr;
+}
+//------------------------------------
+
+//сравнение
+string Array::operator==(Array& other)
+{
+	string s;
+	for (int i = 0; i < other.size; i++) {
+		if (!ownership_check_array(other.arr[i])) {
+			s = "Множества не равны";
+			break;
+		}
+		else {
+			s = "Множества равны";
+		}
+	}
+	return s;
+}
+
+
+ostream& operator<< (ostream& output, Array& arr) {
+	output << arr.to_print();
 	return output;
 }
